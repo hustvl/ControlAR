@@ -1,4 +1,5 @@
 <div align ="center">
+<img src="./assets/logo.jpeg" width="20%">
 <h1> ControlAR </h1>
 <h3> Controllable Image Generation with Autoregressive Models </h3>
 
