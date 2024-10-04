@@ -10,19 +10,52 @@ Zongming Li<sup>1,\*</sup>, [Tianheng Cheng](https://scholar.google.com/citation
 
 (\* equal contribution, 📧 corresponding author)
 
-[![arxiv paper](https://img.shields.io/badge/arXiv-Paper-red)](https://arxiv.org/abs/2406.20076)
+[![arxiv paper](https://img.shields.io/badge/arXiv-Paper-red)](https://arxiv.org/abs/2410.02705)
 </div>
+
+
+<div align="center">
+<img src="./assets/vis.png">
+</div>
+
 
 ## News
 
-`[2024-10-04]:` We have released the [technical report of ControlAR](https://arxiv.org/abs/2406.20076). Code, models, and demos are coming soon!
+`[2024-10-04]:` We have released the [technical report of ControlAR](https://arxiv.org/abs/2410.02705). Code, models, and demos are coming soon!
 
 
 ## Highlights
 
+* ControlAR explores an effective yet simple *conditional decoding* strategy for adding spatial controls to autoregressive models, e.g., [LlamaGen](https://github.com/FoundationVision/LlamaGen), from a sequence perspective.
+
+* ControlAR supports *arbitrary-resolution* image generation with autoregressive models without hand-crafted special tokens or resolution-aware prompts.
+
+
+## Results
+
+We provide both quantitative and qualitative comparisons with diffusion-based methods in the technical report! 
+
+<div align="center">
+<img src="./assets/comparison.png">
+</div>
 
 
 ## Acknowledgments
 
+The development of ControlAR is based on [LlamaGen](https://github.com/FoundationVision/LlamaGen), [ControlNet](https://github.com/lllyasviel/ControlNet), [ControlNet++](https://github.com/liming-ai/ControlNet_Plus_Plus), and [AiM](https://github.com/hp-l33/AiM), and we sincerely thank the contributors for thoese great works!
 
-## Citations
+## Citation
+If you find ControlAR is useful in your research or applications, please consider giving us a star 🌟 and citing it by the following BibTeX entry.
+
+```bibtex
+@article{li2024controlar,
+      title={ControlAR: Controllable Image Generation with Autoregressive Models}, 
+      author={Zongming Li, Tianheng Cheng, Shoufa Chen, Peize Sun, Haocheng Shen, Longjin Ran, Xiaoxin Chen, Wenyu Liu, Xinggang Wang},
+      year={2024},
+      eprint={2410.02705},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2410.02705}, 
+}
+```
+
