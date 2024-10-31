@@ -7,7 +7,7 @@ Zongming Li<sup>1,\*</sup>, [Tianheng Cheng](https://scholar.google.com/citation
 
 <sup>1</sup> Huazhong University of Science and Technology,
 <sup>2</sup> The University of Hong Kong
-<sup>2</sup> vivo AI Lab
+<sup>3</sup> vivo AI Lab
 
 (\* equal contribution, 📧 corresponding author)
 
