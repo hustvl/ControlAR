@@ -35,7 +35,7 @@ Zongming Li<sup>1,\*</sup>, [Tianheng Cheng](https://scholar.google.com/citation
 
 ## TODO
 
-- [x] release code & models.\
+- [x] release code & models.
 - [ ] release demo code and HuggingFace demo.
 
 
