@@ -50,7 +50,15 @@ We provide both quantitative and qualitative comparisons with diffusion-based me
 
 ## Models
 
-All model checkpoints will be updated as soon as possible, which are under the review process for open source.
+We released checkpoints of text-to-image ControlAR on different controls and settings, *i.e.* arbitrary-resolution generation.
+
+| AR Model | Type | Control | Arbitrary-Resolution | Checkpoint |
+| :--------| :--: | :-----: | :------------------: | :--------: |
+| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | Canny Edge | ✅ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/canny_MR.safetensors) |
+| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | Depth | ✅ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/depth_MR.safetensors) |
+| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | HED Edge | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/hed.safetensors) |
+| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | Seg. Mask | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/seg_cocostuff.safetensors) |
+
 
 
 ## Getting Started
@@ -100,17 +108,6 @@ We recommend storing them in the following structures:
       |---c2i_L_256.pt
       |---t2i_XL_stage2_512.pt
 ```
-
-### ModelZoo of ControlAR
-
-| AR Model | Type | Control | Arbitrary-Resolution | Checkpoint |
-| :--------| :--: | :-----: | :------------------: | :--------: |
-| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | Canny Edge | ✅ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/canny_MR.safetensors) |
-| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | Depth | ✅ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/depth_MR.safetensors) |
-| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | HED Edge | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/hed.safetensors) |
-| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | Seg. Mask | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/seg_cocostuff.safetensors) |
-
-
 
 ###  Sample & Generation
 
