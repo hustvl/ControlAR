@@ -109,6 +109,11 @@ We recommend storing them in the following structures:
       |---t2i_XL_stage2_512.pt
 ```
 
+### Demo
+
+Coming soon...
+
+
 ###  Sample & Generation
 
 #### 1. Class-to-image genetation

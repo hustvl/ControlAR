@@ -16,3 +16,7 @@ controlnet_aux
 ftfy
 clean-fid
 safetensors
+transformers
+tiktoken
+sentencepiece
+basicsr
