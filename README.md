@@ -94,12 +94,12 @@ We recommend storing them in the following structures:
       |---depth/depth_MR.safetensors
       |---seg/seg_cocostuff.safetensors
       |---t5-ckpt
-      |---flan-t5-xl
-            |---config.json
-            |---pytorch_model-00001-of-00002.bin
-            |---pytorch_model-00002-of-00002.bin
-            |---pytorch_model.bin.index.json
-            |---tokenizer.json
+            |---flan-t5-xl
+                  |---config.json
+                  |---pytorch_model-00001-of-00002.bin
+                  |---pytorch_model-00002-of-00002.bin
+                  |---pytorch_model.bin.index.json
+                  |---tokenizer.json
       |---vq
       |---vq_ds16_c2i.pt
       |---vq_ds16_t2i.pt
