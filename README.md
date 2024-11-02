@@ -67,15 +67,15 @@ We released checkpoints of text-to-image ControlAR on different controls and set
 
 ```bash
 conda create -n ControlAR python=3.10
-git clone https://github.com/hustvl/ControlAR.git\
-cd ControlAR\
-pip install torch==2.1.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118\
-pip install -r requirements.txt\
-pip3 install -U openmim \
-mim install mmengine \
-mim install "mmcv==2.1.0"\
-pip3 install "mmsegmentation>=1.0.0"\
-pip3 install mmdet\
+git clone https://github.com/hustvl/ControlAR.git
+cd ControlAR
+pip install torch==2.1.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
+pip install -r requirements.txt
+pip3 install -U openmim 
+mim install mmengine 
+mim install "mmcv==2.1.0"
+pip3 install "mmsegmentation>=1.0.0"
+pip3 install mmdet
 git clone https://github.com/open-mmlab/mmsegmentation.git
 ```
 
