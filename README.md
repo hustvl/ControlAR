@@ -66,7 +66,7 @@ We released checkpoints of text-to-image ControlAR on different controls and set
 ### Installation
 
 ```bash
-conda create -n ControlAR python=3.10\
+conda create -n ControlAR python=3.10
 git clone https://github.com/hustvl/ControlAR.git\
 cd ControlAR\
 pip install torch==2.1.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118\
@@ -89,10 +89,10 @@ We recommend storing them in the following structures:
 ```
 |---checkpoints
       |---t2i
-      |---canny/canny_MR.safetensors
-      |---hed/hed.safetensors
-      |---depth/depth_MR.safetensors
-      |---seg/seg_cocostuff.safetensors
+            |---canny/canny_MR.safetensors
+            |---hed/hed.safetensors
+            |---depth/depth_MR.safetensors
+            |---seg/seg_cocostuff.safetensors
       |---t5-ckpt
             |---flan-t5-xl
                   |---config.json
@@ -101,12 +101,12 @@ We recommend storing them in the following structures:
                   |---pytorch_model.bin.index.json
                   |---tokenizer.json
       |---vq
-      |---vq_ds16_c2i.pt
-      |---vq_ds16_t2i.pt
+            |---vq_ds16_c2i.pt
+            |---vq_ds16_t2i.pt
       |---llamagen (Only necessary for training)
-      |---c2i_B_256.pt
-      |---c2i_L_256.pt
-      |---t2i_XL_stage2_512.pt
+            |---c2i_B_256.pt
+            |---c2i_L_256.pt
+            |---t2i_XL_stage2_512.pt
 ```
 
 ### Demo
