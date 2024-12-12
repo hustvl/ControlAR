@@ -367,6 +367,7 @@ class Transformer(nn.Module):
         self.mask = get_causal_mask(256)
         self.global_token = None
 
+        self.control_strength = 1    
 
     def initialize_weights(self):        
         # Initialize nn.Linear and nn.Embedding
@@ -413,7 +414,8 @@ class Transformer(nn.Module):
         targets: Optional[torch.Tensor] = None,
         mask: Optional[torch.Tensor] = None,
         valid: Optional[torch.Tensor] = None,
-        condition: Optional[torch.Tensor] = None
+        condition: Optional[torch.Tensor] = None,
+        control_strength: Optional[int] = 1
     ):
         if idx is not None and cond_idx is not None: # training or naive inference
             cond_embeddings,drop_ids = self.cls_embedding(cond_idx, train=self.training)
@@ -429,11 +431,15 @@ class Transformer(nn.Module):
             self.freqs_cis = self.freqs_cis.to(h.device)
         else:
             if cond_idx is not None: # prefill in inference
+                self.control_strength = control_strength
                 token_embeddings = self.cls_embedding(cond_idx, train=self.training)
                 token_embeddings = token_embeddings[:,:self.cls_token_num]
                 if condition is not None:
-                    condition_embeddings = self.condition_mlp(condition.to(torch.bfloat16),train=self.training)
+                    condition_embeddings = self.condition_mlp(condition, train=self.training)#.to(torch.bfloat16),train=self.training)
                     self.condition_token = condition_embeddings
+                    self.condition_token = [self.condition_layers[0](self.condition_token),
+                                            self.condition_layers[1](self.condition_token),
+                                            self.condition_layers[2](self.condition_token)]
                     
             else: # decode_n_tokens(kv cache) in inference
                 token_embeddings = self.tok_embeddings(idx)
@@ -453,9 +459,11 @@ class Transformer(nn.Module):
                     h[:, self.cls_token_num-1:] = h[:, self.cls_token_num-1:] + self.condition_layers[i//self.layer_internal](self.condition_token)
                 else:
                     if len(input_pos)>1:
-                        h[:, -1:] = h[:, -1:] + self.condition_layers[i//self.layer_internal](self.condition_token[:,0:1])
+                        # h[:, -1:] = h[:, -1:] + self.condition_layers[i//self.layer_internal](self.condition_token[:,0:1])
+                        h[:,-1:] = h[:, -1:] + self.control_strength*self.condition_token[i//self.layer_internal][:,0:1]
                     else:
-                        h = h + self.condition_layers[i//self.layer_internal](self.condition_token[:,input_pos-self.cls_token_num+1])
+                        # h = h + self.condition_layers[i//self.layer_internal](self.condition_token[:,input_pos-self.cls_token_num+1])
+                        h = h + self.control_strength*self.condition_token[i//self.layer_internal][:,input_pos-self.cls_token_num+1]
             h = layer(h, freqs_cis, input_pos, mask)
         # output layers
         h = self.norm(h)
