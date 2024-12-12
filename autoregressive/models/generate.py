@@ -82,9 +82,9 @@ def logits_to_probs(logits, temperature: float = 1.0, top_p: float=1.0, top_k: i
     return probs
 
 
-def prefill(model, cond_idx: torch.Tensor, input_pos: torch.Tensor, cfg_scale: float, condition:torch.Tensor, **sampling_kwargs):
+def prefill(model, cond_idx: torch.Tensor, input_pos: torch.Tensor, cfg_scale: float, condition:torch.Tensor, control_strength: float=1, **sampling_kwargs):
     if cfg_scale > 1.0:
-        logits, _ = model(None, cond_idx, input_pos, condition=condition)
+        logits, _ = model(None, cond_idx, input_pos, condition=condition, control_strength=control_strength)
         logits_combined = logits
         cond_logits, uncond_logits = torch.split(logits_combined, len(logits_combined) // 2, dim=0)
         logits = uncond_logits + (cond_logits - uncond_logits) * cfg_scale
@@ -132,7 +132,7 @@ def decode_n_tokens(
 
 
 @torch.no_grad()
-def generate(model, cond, max_new_tokens, emb_masks=None, cfg_scale=1.0, cfg_interval=-1, condition=None, condition_null=None, condition_token_nums=0, **sampling_kwargs):
+def generate(model, cond, max_new_tokens, emb_masks=None, cfg_scale=1.0, cfg_interval=-1, condition=None, condition_null=None, condition_token_nums=0, control_strength=1, **sampling_kwargs):
     if condition is not None:
         condition = model.adapter(condition)
         condition = model.adapter_mlp(condition)
@@ -195,7 +195,7 @@ def generate(model, cond, max_new_tokens, emb_masks=None, cfg_scale=1.0, cfg_int
     # create an empty tensor of the expected final shape and fill in the current tokens
     seq = torch.empty((max_batch_size, T_new), dtype=torch.int, device=device)
     input_pos = torch.arange(0, T, device=device)
-    next_token = prefill(model, cond_combined, input_pos, cfg_scale, condition_combined, **sampling_kwargs)
+    next_token = prefill(model, cond_combined, input_pos, cfg_scale, condition_combined, control_strength, **sampling_kwargs)
     seq[:, T:T+1] = next_token
 
     input_pos = torch.tensor([T], device=device, dtype=torch.int)
