@@ -10,17 +10,16 @@ def randomize_seed_fn(seed: int, randomize_seed: bool) -> int:
 
 examples = [
     [
-        "condition/example/t2i/multigen/doll.jpg",
-        "A stuffed animal wearing a mask and a leash, sitting on a blanket",
-        "(512, 512)"
+        "condition/example/t2i/landscape.jpg",
+        "Landscape photos with snow on the mountains in the distance and clear reflections in the lake near by",
     ],
     [
-        "condition/example/t2i/multigen/girl.jpg",
-        "An anime style girl with blue hair", "(512, 512)"
+        "condition/example/t2i/girl.jpg",
+        "A girl with blue hair",
     ],
     [
-        "condition/example/t2i/multi_resolution/bird.jpg", "colorful bird",
-        "(921, 564)"
+        "condition/example/t2i/eye.png",
+        "A vivid drawing of an eye with a few pencils nearby",
     ],
 ]
 
@@ -33,16 +32,28 @@ def create_demo(process):
                 prompt = gr.Textbox(label="Prompt")
                 run_button = gr.Button("Run")
                 with gr.Accordion("Advanced options", open=False):
+                    preprocessor_name = gr.Radio(
+                        label="Preprocessor",
+                        choices=[
+                            "Hed",
+                            "Canny",
+                            "Lineart",
+                            "No preprocess",
+                        ],
+                        type="value",
+                        value="Hed",
+                        info='Edge type.',
+                    )
                     canny_low_threshold = gr.Slider(
                         label="Canny low threshold",
                         minimum=0,
-                        maximum=1000,
+                        maximum=255,
                         value=100,
                         step=50)
                     canny_high_threshold = gr.Slider(
                         label="Canny high threshold",
                         minimum=0,
-                        maximum=1000,
+                        maximum=255,
                         value=200,
                         step=50)
                     cfg_scale = gr.Slider(label="Guidance scale",
@@ -50,11 +61,12 @@ def create_demo(process):
                                           maximum=30.0,
                                           value=4,
                                           step=0.1)
-                    relolution = gr.Slider(label="(H, W)",
-                                           minimum=384,
-                                           maximum=768,
-                                           value=512,
-                                           step=16)
+                    control_strength = gr.Slider(minimum=0., maximum=1.0, step=0.1, value=0.6, label="control_strength")
+                    # relolution = gr.Slider(label="(H, W)",
+                    #                        minimum=384,
+                    #                        maximum=768,
+                    #                        value=512,
+                    #                        step=16)
                     top_k = gr.Slider(minimum=1,
                                       maximum=16384,
                                       step=1,
@@ -88,10 +100,8 @@ def create_demo(process):
             inputs=[
                 image,
                 prompt,
-                relolution,
-            ],
-            outputs=result,
-            fn=process,
+                # relolution,
+            ]
         )
         inputs = [
             image,
@@ -103,19 +113,21 @@ def create_demo(process):
             seed,
             canny_low_threshold,
             canny_high_threshold,
+            control_strength,
+            preprocessor_name,
         ]
-        prompt.submit(
-            fn=randomize_seed_fn,
-            inputs=[seed, randomize_seed],
-            outputs=seed,
-            queue=False,
-            api_name=False,
-        ).then(
-            fn=process,
-            inputs=inputs,
-            outputs=result,
-            api_name=False,
-        )
+        # prompt.submit(
+        #     fn=randomize_seed_fn,
+        #     inputs=[seed, randomize_seed],
+        #     outputs=seed,
+        #     queue=False,
+        #     api_name=False,
+        # ).then(
+        #     fn=process,
+        #     inputs=inputs,
+        #     outputs=result,
+        #     api_name=False,
+        # )
         run_button.click(
             fn=randomize_seed_fn,
             inputs=[seed, randomize_seed],
@@ -126,7 +138,7 @@ def create_demo(process):
             fn=process,
             inputs=inputs,
             outputs=result,
-            api_name="canny",
+            api_name="edge",
         )
     return demo
 
@@ -134,5 +146,5 @@ def create_demo(process):
 if __name__ == "__main__":
     from model import Model
     model = Model()
-    demo = create_demo(model.process_canny)
+    demo = create_demo(model.process_edge)
     demo.queue().launch(share=False, server_name="0.0.0.0")
