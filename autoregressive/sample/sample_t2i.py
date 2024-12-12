@@ -164,6 +164,7 @@ def main(args):
             cfg_scale=args.cfg_scale,
             temperature=args.temperature, top_k=args.top_k,
             top_p=args.top_p, sample_logits=True, 
+            control_strength=args.control_strength,
             )
         sampling_time = time.time() - t1
         print(f"Full sampling takes about {sampling_time:.2f} seconds.")    
@@ -208,8 +209,10 @@ if __name__ == "__main__":
     parser.add_argument("--top-p", type=float, default=1.0, help="top-p value to sample with")
 
     parser.add_argument("--mixed-precision", type=str, default='bf16', choices=["none", "fp16", "bf16"]) 
-    parser.add_argument("--condition-type", type=str, choices=['seg', 'canny', 'hed', 'lineart', 'depth'], default="canny")
+    parser.add_argument("--condition-type", type=str, choices=['seg', 'canny', 'hed', 'lineart', 'depth', 'canny_base'], default="canny")
     parser.add_argument("--prompt", type=str, default='a high-quality image')
     parser.add_argument("--condition-path", type=str, default='condition/example/t2i/multigen/landscape.png')
+
+    parser.add_argument("--control-strength", type=float, default=1.0)
     args = parser.parse_args()
     main(args)
