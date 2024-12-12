@@ -1,58 +1,42 @@
-import time
-import torch
-import numpy as np
-from PIL import Image
+import gc
+import spaces
 from safetensors.torch import load_file
-
-from language.t5 import T5Embedder
-from condition.canny import CannyDetector
-from condition.midas.depth import MidasDetector
-from autoregressive.models.generate import generate
 from autoregressive.models.gpt_t2i import GPT_models
 from tokenizer.tokenizer_image.vq_model import VQ_models
-
+from language.t5 import T5Embedder
+import torch
+import numpy as np
+import PIL
+from PIL import Image
+from condition.canny import CannyDetector
+import time
+from autoregressive.models.generate import generate
+from condition.midas.depth import MidasDetector
+from preprocessor import Preprocessor
 
 models = {
-    "canny": "checkpoints/canny_MR.safetensors",
-    "depth": "checkpoints/depth_MR.safetensors",
+    "edge": "checkpoints/edge_base.safetensors",
+    "depth": "checkpoints/depth_base.safetensors",
 }
-
-
-def resize_image_to_16_multiple(image, condition_type='canny'):
-    if isinstance(image, np.ndarray):
-        image = Image.fromarray(image)
-    # image = Image.open(image_path)
-    width, height = image.size
-
-    if condition_type == 'depth':  # The depth model requires a side length that is a multiple of 32
-        new_width = (width + 31) // 32 * 32
-        new_height = (height + 31) // 32 * 32
-    else:
-        new_width = (width + 15) // 16 * 16
-        new_height = (height + 15) // 16 * 16
-
-    resized_image = image.resize((new_width, new_height))
-    return resized_image
-
-
 class Model:
-
     def __init__(self):
         self.device = torch.device(
-            "cuda:0" if torch.cuda.is_available() else "cpu")
+            "cuda")
         self.base_model_id = ""
         self.task_name = ""
         self.vq_model = self.load_vq()
         self.t5_model = self.load_t5()
-        self.gpt_model_canny = self.load_gpt(condition_type='canny')
-        self.gpt_model_depth = self.load_gpt(condition_type='depth')
-        self.get_control_canny = CannyDetector()
-        self.get_control_depth = MidasDetector(device=self.device)
+        # self.gpt_model_edge = self.load_gpt(condition_type='edge')
+        # self.gpt_model_depth = self.load_gpt(condition_type='depth')
+        self.gpt_model = self.load_gpt()
+        self.preprocessor = Preprocessor()
+
+    def to(self, device):
+        self.gpt_model_canny.to('cuda')
 
     def load_vq(self):
         vq_model = VQ_models["VQ-16"](codebook_size=16384,
                                       codebook_embed_dim=8)
-        vq_model.to(self.device)
         vq_model.eval()
         checkpoint = torch.load(f"checkpoints/vq_ds16_t2i.pt",
                                 map_location="cpu")
@@ -61,28 +45,41 @@ class Model:
         print("image tokenizer is loaded")
         return vq_model
 
-    def load_gpt(self, condition_type='canny'):
-        gpt_ckpt = models[condition_type]
-        precision = torch.bfloat16
-        latent_size = 768 // 16
+    def load_gpt(self, condition_type='edge'):
+        # gpt_ckpt = models[condition_type]
+        # precision = torch.bfloat16
+        precision = torch.float32
+        latent_size = 512 // 16
         gpt_model = GPT_models["GPT-XL"](
             block_size=latent_size**2,
             cls_token_num=120,
             model_type='t2i',
             condition_type=condition_type,
-        ).to(device=self.device, dtype=precision)
-
-        model_weight = load_file(gpt_ckpt)
-        gpt_model.load_state_dict(model_weight, strict=False)
-        gpt_model.eval()
-        print("gpt model is loaded")
+            adapter_size='base',
+        ).to(device='cpu', dtype=precision)
+        # model_weight = load_file(gpt_ckpt)
+        # gpt_model.load_state_dict(model_weight, strict=False)
+        # gpt_model.eval()
+        # print("gpt model is loaded")
         return gpt_model
 
+    def load_gpt_weight(self, condition_type='edge'):
+        torch.cuda.empty_cache()
+        gc.collect()
+        gpt_ckpt = models[condition_type]
+        model_weight = load_file(gpt_ckpt)
+        self.gpt_model.load_state_dict(model_weight, strict=False)
+        self.gpt_model.eval()
+        torch.cuda.empty_cache()
+        gc.collect()
+        # print("gpt model is loaded")
+        
     def load_t5(self):
-        precision = torch.bfloat16
+        # precision = torch.bfloat16
+        precision = torch.float32
         t5_model = T5Embedder(
             device=self.device,
-            local_cache=False,
+            local_cache=True,
             cache_dir='checkpoints/flan-t5-xl',
             dir_or_name='flan-t5-xl',
             torch_dtype=precision,
@@ -91,7 +88,8 @@ class Model:
         return t5_model
 
     @torch.no_grad()
-    def process_canny(
+    @spaces.GPU(enable_queue=True)
+    def process_edge(
         self,
         image: np.ndarray,
         prompt: str,
@@ -102,19 +100,41 @@ class Model:
         seed: int,
         low_threshold: int,
         high_threshold: int,
-    ) -> list[Image.Image]:
+        control_strength: float,
+        preprocessor_name: str,
+    ) -> list[PIL.Image.Image]:
+        
+        if isinstance(image, np.ndarray):
+            image = Image.fromarray(image)
+        origin_W, origin_H = image.size
+        if preprocessor_name == 'Canny':
+            self.preprocessor.load("Canny")
+            condition_img = self.preprocessor(
+                image=image, low_threshold=low_threshold, high_threshold=high_threshold, detect_resolution=512)
+        elif preprocessor_name == 'Hed':
+            self.preprocessor.load("HED")
+            condition_img = self.preprocessor(
+                image=image,image_resolution=512, detect_resolution=512)
+        elif preprocessor_name == 'Lineart':
+            self.preprocessor.load("Lineart")
+            condition_img = self.preprocessor(
+                image=image,image_resolution=512, detect_resolution=512)
+        elif preprocessor_name == 'No preprocess':
+            condition_img = image
+        print('get edge')
+        del self.preprocessor.model
+        torch.cuda.empty_cache()
+        condition_img = condition_img.resize((512,512))
+        W, H = condition_img.size
 
-        image = resize_image_to_16_multiple(image, 'canny')
-        W, H = image.size
-        print(W, H)
-        condition_img = self.get_control_canny(np.array(image), low_threshold,
-                                               high_threshold)
-        condition_img = torch.from_numpy(condition_img[None, None,
-                                                       ...]).repeat(
-                                                           2, 3, 1, 1)
+        self.t5_model.model.to('cuda').to(torch.bfloat16)
+        self.load_gpt_weight('edge')
+        self.gpt_model.to('cuda').to(torch.bfloat16)
+        self.vq_model.to('cuda')
+        condition_img = torch.from_numpy(np.array(condition_img)).unsqueeze(0).permute(0,3,1,2).repeat(1,1,1,1)
         condition_img = condition_img.to(self.device)
-        condition_img = 2 * (condition_img / 255 - 0.5)
-        prompts = [prompt] * 2
+        condition_img = 2*(condition_img/255 - 0.5)
+        prompts = [prompt] * 1
         caption_embs, emb_masks = self.t5_model.get_text_embeddings(prompts)
 
         print(f"processing left-padding...")
@@ -132,8 +152,9 @@ class Model:
         c_emb_masks = new_emb_masks
         qzshape = [len(c_indices), 8, H // 16, W // 16]
         t1 = time.time()
+        print(caption_embs.device)
         index_sample = generate(
-            self.gpt_model_canny,
+            self.gpt_model,
             c_indices,
             (H // 16) * (W // 16),
             c_emb_masks,
@@ -143,6 +164,7 @@ class Model:
             top_k=top_k,
             top_p=top_p,
             sample_logits=True,
+            control_strength=control_strength,
         )
         sampling_time = time.time() - t1
         print(f"Full sampling takes about {sampling_time:.2f} seconds.")
@@ -153,10 +175,10 @@ class Model:
             index_sample, qzshape)  # output value is between [-1, 1]
         decoder_time = time.time() - t2
         print(f"decoder takes about {decoder_time:.2f} seconds.")
-
+        # samples = condition_img[0:1]
         samples = torch.cat((condition_img[0:1], samples), dim=0)
         samples = 255 * (samples * 0.5 + 0.5)
-        samples = [image] + [
+        samples = [
             Image.fromarray(
                 sample.permute(1, 2, 0).cpu().detach().numpy().clip(
                     0, 255).astype(np.uint8)) for sample in samples
@@ -166,6 +188,7 @@ class Model:
         return samples
 
     @torch.no_grad()
+    @spaces.GPU(enable_queue=True)
     def process_depth(
         self,
         image: np.ndarray,
@@ -175,17 +198,37 @@ class Model:
         top_k: int,
         top_p: int,
         seed: int,
-    ) -> list[Image.Image]:
-        image = resize_image_to_16_multiple(image, 'depth')
-        W, H = image.size
-        print(W, H)
-        image_tensor = torch.from_numpy(np.array(image)).to(self.device)
-        condition_img = torch.from_numpy(
-            self.get_control_depth(image_tensor)).unsqueeze(0)
-        condition_img = condition_img.unsqueeze(0).repeat(2, 3, 1, 1)
+        control_strength: float,
+        preprocessor_name: str
+    ) -> list[PIL.Image.Image]:
+        
+        if isinstance(image, np.ndarray):
+            image = Image.fromarray(image)
+        origin_W, origin_H = image.size
+        # print(image)
+        if preprocessor_name == 'depth':
+            self.preprocessor.load("Depth")
+            condition_img = self.preprocessor(
+                    image=image,
+                    image_resolution=512,
+                    detect_resolution=512,
+                )
+        elif preprocessor_name == 'No preprocess':
+            condition_img = image
+        print('get depth')
+        del self.preprocessor.model
+        torch.cuda.empty_cache()
+        condition_img = condition_img.resize((512,512))
+        W, H = condition_img.size
+
+        self.t5_model.model.to(self.device).to(torch.bfloat16)
+        self.load_gpt_weight('depth')
+        self.gpt_model.to('cuda').to(torch.bfloat16)
+        self.vq_model.to(self.device)
+        condition_img = torch.from_numpy(np.array(condition_img)).unsqueeze(0).permute(0,3,1,2).repeat(1,1,1,1)
         condition_img = condition_img.to(self.device)
-        condition_img = 2 * (condition_img / 255 - 0.5)
-        prompts = [prompt] * 2
+        condition_img = 2*(condition_img/255 - 0.5)
+        prompts = [prompt] * 1
         caption_embs, emb_masks = self.t5_model.get_text_embeddings(prompts)
 
         print(f"processing left-padding...")
@@ -205,7 +248,7 @@ class Model:
         qzshape = [len(c_indices), 8, H // 16, W // 16]
         t1 = time.time()
         index_sample = generate(
-            self.gpt_model_depth,
+            self.gpt_model,
             c_indices,
             (H // 16) * (W // 16),
             c_emb_masks,
@@ -215,6 +258,7 @@ class Model:
             top_k=top_k,
             top_p=top_p,
             sample_logits=True,
+            control_strength=control_strength,
         )
         sampling_time = time.time() - t1
         print(f"Full sampling takes about {sampling_time:.2f} seconds.")
@@ -226,14 +270,15 @@ class Model:
         print(f"decoder takes about {decoder_time:.2f} seconds.")
         condition_img = condition_img.cpu()
         samples = samples.cpu()
+
+        # samples = condition_img[0:1]
         samples = torch.cat((condition_img[0:1], samples), dim=0)
         samples = 255 * (samples * 0.5 + 0.5)
-        samples = [image] + [
+        samples = [
             Image.fromarray(
-                sample.permute(1, 2, 0).numpy().clip(0, 255).astype(np.uint8))
+                sample.permute(1, 2, 0).cpu().detach().numpy().clip(0, 255).astype(np.uint8))
             for sample in samples
         ]
-        del image_tensor
         del condition_img
         torch.cuda.empty_cache()
         return samples
