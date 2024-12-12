@@ -147,7 +147,35 @@ python autoregressive/sample/sample_t2i.py \
 --prompt 'A stuffed animal wearing a mask and a leash, sitting on a pink blanket'
 ```
 
-#### 3. Arbitrary-resolution generation
+#### 3. Text-to-image generation with adjustable control strength
+*Generate an image using depth map and text-to-image ControlAR:*
+
+```bash
+python autoregressive/sample/sample_t2i.py \
+--vq-ckpt checkpoints/vq/vq_ds16_t2i.pt \
+--gpt-ckpt checkpoints/t2i/depth_base.safetensors \
+--gpt-model GPT-XL --image-size 512 \
+--condition-type seg --seed 0 --condition-path condition/example/t2i/multigen/bird.jpg \
+--prompt 'A bird made of blue crystal' \
+--adapter-size base \
+--control-strength 0.6
+```
+
+*Generate an image using lineart edge and text-to-image ControlAR:*
+
+```bash
+python autoregressive/sample/sample_t2i.py \
+--vq-ckpt checkpoints/vq/vq_ds16_t2i.pt \
+--gpt-ckpt checkpoints/t2i/edge_base.safetensors \
+--gpt-model GPT-XL --image-size 512 \
+--condition-type lineart --seed 0 --condition-path condition/example/t2i/multigen/girl.jpg \
+--prompt 'A girl with blue hair' \
+--adapter-size base \
+--control-strength 0.6
+```
+
+
+#### 4. Arbitrary-resolution generation
 
 ```bash
 python3 autoregressive/sample/sample_t2i_MR.py --vq-ckpt checkpoints/vq/vq_ds16_t2i.pt \
