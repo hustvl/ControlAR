@@ -8,19 +8,20 @@ def randomize_seed_fn(seed: int, randomize_seed: bool) -> int:
     return seed
 
 
-examples = [[
-    "condition/example/t2i/multigen/sofa.png",
-    "The red sofa in the living room has several pillows on it", "(512, 512)"
-],
+examples = [
             [
-                "condition/example/t2i/multigen/house.jpg",
-                "A brick house with a chimney under a starry sky.",
-                "(512, 512)"
+                "condition/example/t2i/bird.jpg",
+                "A bird made of blue crystal"
             ],
             [
-                "condition/example/t2i/multi_resolution/car.jpg",
-                "a sport car", "(448, 768)"
-            ]]
+                "condition/example/t2i/sofa.png",
+                "The red sofa in the living room has several pillows on it"
+            ],
+            [
+                "condition/example/t2i/house.jpg",
+                "A brick house with a chimney under a starry sky.",
+            ]
+           ]
 
 
 def create_demo(process):
@@ -31,16 +32,27 @@ def create_demo(process):
                 prompt = gr.Textbox(label="Prompt")
                 run_button = gr.Button("Run")
                 with gr.Accordion("Advanced options", open=False):
+                    preprocessor_name = gr.Radio(
+                        label="Preprocessor",
+                        choices=[
+                            "depth",
+                            "No preprocess",
+                        ],
+                        type="value",
+                        value="depth",
+                        info='depth.',
+                    )
                     cfg_scale = gr.Slider(label="Guidance scale",
                                           minimum=0.1,
                                           maximum=30.0,
                                           value=4,
                                           step=0.1)
-                    resolution = gr.Slider(label="(H, W)",
-                                           minimum=384,
-                                           maximum=768,
-                                           value=512,
-                                           step=16)
+                    control_strength = gr.Slider(minimum=0., maximum=1.0, step=0.1, value=0.6, label="control_strength")
+                    # resolution = gr.Slider(label="(H, W)",
+                    #                        minimum=384,
+                    #                        maximum=768,
+                    #                        value=512,
+                    #                        step=16)
                     top_k = gr.Slider(minimum=1,
                                       maximum=16384,
                                       step=1,
@@ -74,10 +86,8 @@ def create_demo(process):
             inputs=[
                 image,
                 prompt,
-                resolution,
-            ],
-            outputs=result,
-            fn=process,
+                # resolution,
+            ]
         )
         inputs = [
             image,
@@ -87,6 +97,8 @@ def create_demo(process):
             top_k,
             top_p,
             seed,
+            control_strength,
+            preprocessor_name
         ]
         prompt.submit(
             fn=randomize_seed_fn,
@@ -110,7 +122,7 @@ def create_demo(process):
             fn=process,
             inputs=inputs,
             outputs=result,
-            api_name="canny",
+            api_name="depth",
         )
     return demo
 
@@ -120,3 +132,4 @@ if __name__ == "__main__":
     model = Model()
     demo = create_demo(model.process_depth)
     demo.queue().launch(share=False, server_name="0.0.0.0")
+
