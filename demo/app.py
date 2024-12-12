@@ -6,10 +6,10 @@ from app_canny import create_demo as create_demo_canny
 from app_depth import create_demo as create_demo_depth
 
 hf_hub_download(repo_id='wondervictor/ControlAR',
-                filename='canny_MR.safetensors',
+                filename='canny_base.safetensors',
                 local_dir='./checkpoints/')
 hf_hub_download(repo_id='wondervictor/ControlAR',
-                filename='depth_MR.safetensors',
+                filename='depth_base.safetensors',
                 local_dir='./checkpoints/')
 # hf_hub_download('google/flan-t5-xl', cache_dir='./checkpoints/')
 
@@ -28,7 +28,7 @@ with gr.Blocks(css="style.css") as demo:
         with gr.TabItem("Depth"):
             create_demo_depth(model.process_depth)
         with gr.TabItem("Canny"):
-            create_demo_canny(model.process_canny)
+            create_demo_canny(model.process_edge)
 
 if __name__ == "__main__":
     demo.launch(share=False)
