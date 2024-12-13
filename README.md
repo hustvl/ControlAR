@@ -56,12 +56,12 @@ We released checkpoints of text-to-image ControlAR on different controls and set
 
 | AR Model | Type | Control encoder | Control | Arbitrary-Resolution | Checkpoint |
 | :--------| :--: | :-------------: | :-----: | :------------------: | :--------: |
-| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | dinov2-small | Canny Edge | ✅ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/canny_MR.safetensors) |
-| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | dinov2-small | Depth | ✅ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/depth_MR.safetensors) |
-| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | dinov2-small | HED Edge | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/hed.safetensors) |
-| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | dinov2-small | Seg. Mask | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/seg_cocostuff.safetensors) |
-| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | dinov2-base | edge(canny,hed,lineart) | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/edge_base.safetensors) |
-| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | dinov2-base | depth | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/depth_base.safetensors) |
+| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | DINOv2-small | Canny Edge | ✅ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/canny_MR.safetensors) |
+| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | DINOv2-small | Depth | ✅ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/depth_MR.safetensors) |
+| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | DINOv2-small | HED Edge | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/hed.safetensors) |
+| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | DINOv2-small | Seg. Mask | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/seg_cocostuff.safetensors) |
+| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | DINOv2-base | Edge (Canny, Hed, Lineart) | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/edge_base.safetensors) |
+| [LlamaGen-XL](https://github.com/FoundationVision/LlamaGen#-text-conditional-image-generation) | t2i | DINOv2-base | Depth | ❌ | [ckpt](https://huggingface.co/wondervictor/ControlAR/blob/main/depth_base.safetensors) |
 
 
 
