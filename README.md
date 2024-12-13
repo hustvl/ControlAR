@@ -12,6 +12,7 @@ Zongming Li<sup>1,\*</sup>, [Tianheng Cheng](https://scholar.google.com/citation
 (\* equal contribution, 📧 corresponding author)
 
 [![arxiv paper](https://img.shields.io/badge/arXiv-Paper-red)](https://arxiv.org/abs/2410.02705)
+[![demo](https://img.shields.io/badge/Demo-🤗-orange)](https://huggingface.co/spaces/wondervictor/ControlAR)
 [![checkpoints](https://img.shields.io/badge/HuggingFace-🤗-green)](https://huggingface.co/wondervictor/ControlAR)
 
 </div>
@@ -37,7 +38,7 @@ Zongming Li<sup>1,\*</sup>, [Tianheng Cheng](https://scholar.google.com/citation
 ## TODO
 
 - [x] release code & models.
-- [ ] release demo code and HuggingFace demo.
+- [x] release demo code and HuggingFace demo: [HuggingFace Spaces 🤗](https://huggingface.co/spaces/wondervictor/ControlAR)
 
 
 ## Results
