@@ -58,6 +58,7 @@ def main(args):
         cls_token_num=args.cls_token_num,
         model_type=args.gpt_type,
         condition_type=args.condition_type,
+        adapter_size=args.adapter_size,
     ).to(device=device, dtype=precision)
 
     _, file_extension = os.path.splitext(args.gpt_ckpt)
@@ -127,6 +128,7 @@ def main(args):
             condition_img = condition_img.unsqueeze(1).repeat(2,3,1,1)
         elif args.condition_type == 'lineart':
             condition_img = get_control(torch.from_numpy(np.array(Image.open(condition_path))).permute(2,0,1).unsqueeze(0).to(device).float())
+            condition_img = 1 - condition_img
             condition_img = condition_img.repeat(2,3,1,1) * 255
         elif args.condition_type == 'depth':
             images = Image.open(condition_path)
@@ -212,6 +214,7 @@ if __name__ == "__main__":
     parser.add_argument("--condition-type", type=str, choices=['seg', 'canny', 'hed', 'lineart', 'depth', 'canny_base'], default="canny")
     parser.add_argument("--prompt", type=str, default='a high-quality image')
     parser.add_argument("--condition-path", type=str, default='condition/example/t2i/multigen/landscape.png')
+    Parker.add_argument("--adapter-size", type=str, default='small')
 
     parser.add_argument("--control-strength", type=float, default=1.0)
     args = parser.parse_args()
