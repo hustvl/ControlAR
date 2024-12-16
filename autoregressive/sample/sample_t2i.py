@@ -214,7 +214,7 @@ if __name__ == "__main__":
     parser.add_argument("--condition-type", type=str, choices=['seg', 'canny', 'hed', 'lineart', 'depth', 'canny_base'], default="canny")
     parser.add_argument("--prompt", type=str, default='a high-quality image')
     parser.add_argument("--condition-path", type=str, default='condition/example/t2i/multigen/landscape.png')
-    Parker.add_argument("--adapter-size", type=str, default='small')
+    parser.add_argument("--adapter-size", type=str, default='small')
 
     parser.add_argument("--control-strength", type=float, default=1.0)
     args = parser.parse_args()
