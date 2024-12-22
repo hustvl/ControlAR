@@ -180,6 +180,8 @@ python autoregressive/sample/sample_t2i.py \
 --control-strength 0.6
 ```
 
+(you can change lineart to canny_base or hed)
+
 
 #### 4. Arbitrary-resolution generation
 
