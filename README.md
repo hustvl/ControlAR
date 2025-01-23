@@ -9,6 +9,8 @@ Zongming Li<sup>1,\*</sup>, [Tianheng Cheng](https://scholar.google.com/citation
 <sup>2</sup> The University of Hong Kong
 <sup>3</sup> vivo AI Lab
 
+<b>ICLR 2025</b>
+
 (\* equal contribution, 📧 corresponding author)
 
 [![arxiv paper](https://img.shields.io/badge/arXiv-Paper-red)](https://arxiv.org/abs/2410.02705)
@@ -24,7 +26,8 @@ Zongming Li<sup>1,\*</sup>, [Tianheng Cheng](https://scholar.google.com/citation
 
 
 ## News
-`[2024-12-12]:` We introduce control strength factor, employ a larger control encoder(dinov2-base), and optimize text alignment capabilities along with generation diversity. New model weight: depth_base.safetensors and edge_base.safetensors. The edge_base.safetensors can handle three types of edges, including Canny, HED, and Lineart.\
+`[2025-01-23]:` Our ControlAR has been accepted by ICLR 2025 🚀 ! 
+`[2024-12-12]:` We introduce a control strength factor, employ a larger control encoder(dinov2-base), and optimize text alignment capabilities along with generation diversity. New model weight: depth_base.safetensors and edge_base.safetensors. The edge_base.safetensors can handle three types of edges, including Canny, HED, and Lineart.\
 `[2024-10-31]:` The code and models have been released!\
 `[2024-10-04]:` We have released the [technical report of ControlAR](https://arxiv.org/abs/2410.02705). Code, models, and demos are coming soon!
 
