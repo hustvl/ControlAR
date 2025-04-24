@@ -352,7 +352,7 @@ If you find ControlAR is useful in your research or applications, please conside
 @inproceedings{ControlAR,
       title={ControlAR: Controllable Image Generation with Autoregressive Models}, 
       author={Li, Zongming and Cheng, Tianheng and Chen, Shoufa and Sun, Peize and Shen, Haocheng and Ran, Longjin and Chen, Xiaoxin and Liu, Wenyu and Wang, Xinggang},
-      booktitle={International Conference on Learning Reoresentations},
+      booktitle={International Conference on Learning Representations},
       year={2025}
 }
 ```
