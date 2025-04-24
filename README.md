@@ -349,14 +349,11 @@ The development of ControlAR is based on [LlamaGen](https://github.com/Foundatio
 If you find ControlAR is useful in your research or applications, please consider giving us a star 🌟 and citing it by the following BibTeX entry.
 
 ```bibtex
-@article{li2024controlar,
+@inproceedings{ControlAR,
       title={ControlAR: Controllable Image Generation with Autoregressive Models}, 
-      author={Zongming Li, Tianheng Cheng, Shoufa Chen, Peize Sun, Haocheng Shen, Longjin Ran, Xiaoxin Chen, Wenyu Liu, Xinggang Wang},
-      year={2024},
-      eprint={2410.02705},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2410.02705}, 
+      author={Li, Zongming and Cheng, Tianheng and Chen, Shoufa and Sun, Peize and Shen, Haocheng and Ran, Longjin and Chen, Xiaoxin and Liu, Wenyu and Wang, Xinggang},
+      booktitle={International Conference on Learning Reoresentations},
+      year={2025}
 }
 ```
 
